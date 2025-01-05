@@ -1,4 +1,5 @@
 const userService = require('../services/userService');
+const validator = require('../utils/validator')
 
 class UserController {
     async getUsers(req, res, next) {
@@ -6,15 +7,13 @@ class UserController {
             const allUsers = await userService.getAllUsers();
 
             res.json(allUsers);
-
-            return next();
         } catch (error) {
             console.log(error);
 
             res.status(500).json({error: 'Internal Server Error'});
-
-            return next();
         }
+
+        next();
     }
 
     async createUser(req, res, next) {
@@ -22,8 +21,6 @@ class UserController {
             const newUser = await userService.createUser(req.body);
 
             res.json(newUser);
-
-            return next();
         } catch (error) {
             console.log(error);
 
@@ -31,6 +28,24 @@ class UserController {
 
             return next(error);
         }
+
+        next();
+    }
+
+    async loginUser(req, res, next) {
+        try {
+            const validationResult = validator.validateLoginUser()
+
+            const allUsers = await userService.getAllUsers();
+
+            res.json(allUsers);
+        } catch (error) {
+            console.log(error);
+
+            res.status(500).json({error: 'Internal Server Error'});
+        }
+
+        next();
     }
 }
 
