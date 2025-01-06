@@ -1,51 +1,89 @@
 const userService = require('../services/userService');
-const validator = require('../utils/validator')
+const validator = require('../utils/validator');
 
 class UserController {
-    async getUsers(req, res, next) {
-        try {
-            const allUsers = await userService.getAllUsers();
+    async postUser(req, res) {
+        const validationResult = validator.validatePostUser(req.body);
 
-            res.json(allUsers);
+        if (validationResult.error) {
+            return res.status(400).json({error: validationResult.error.details[0].message});
+        }
+
+        try {
+            const newUser = await userService.postUser(req.body);
+
+            return res.json(newUser);
         } catch (error) {
             console.log(error);
 
-            res.status(500).json({error: 'Internal Server Error'});
+            return res.status(500).json({error: 'Internal Server Error'});
         }
-
-        next();
     }
 
-    async createUser(req, res, next) {
-        try {
-            const newUser = await userService.createUser(req.body);
+    async getUser(req, res) {
+        const userId = req.params.id;
 
-            res.json(newUser);
+        const validationResult = validator.validateId(userId);
+
+        if (validationResult.error) {
+            return res.status(400).json({error: validationResult.error.details[0].message});
+        }
+
+        try {
+            const user = await userService.getUser(userId);
+
+            return res.json(user);
         } catch (error) {
             console.log(error);
 
-            res.status(500).json({error: 'Internal Server Error'});
-
-            return next(error);
+            return res.status(500).json({error: 'Internal Server Error'});
         }
-
-        next();
     }
 
-    async loginUser(req, res, next) {
+    async putUser(req, res) {
+        const userId = req.params.id;
+        const params = req.body;
+
+        const idValidationResult = validator.validateId(userId);
+        const bodyValidationResult = validator.validatePutUser(params);
+
+        if (idValidationResult.error || bodyValidationResult.error) {
+            return res.status(400).json({
+                error: idValidationResult.error
+                    ? idValidationResult.error.details[0].message
+                    : bodyValidationResult.error.details[0].message
+            });
+        }
+
         try {
-            const validationResult = validator.validateLoginUser()
+            const user = await userService.putUser(Object.assign(params, {id: userId}));
 
-            const allUsers = await userService.getAllUsers();
-
-            res.json(allUsers);
+            return res.json(user);
         } catch (error) {
             console.log(error);
 
-            res.status(500).json({error: 'Internal Server Error'});
+            return res.status(500).json({error: 'Internal Server Error'});
+        }
+    }
+
+    async deleteUser(req, res) {
+        const userId = req.params.id;
+
+        const validationResult = validator.validateId(userId);
+
+        if (validationResult.error) {
+            return res.status(400).json({error: validationResult.error.details[0].message});
         }
 
-        next();
+        try {
+            const user = await userService.deleteUser(userId);
+
+            return res.json(user);
+        } catch (error) {
+            console.log(error);
+
+            return res.status(500).json({error: 'Internal Server Error'});
+        }
     }
 }
 

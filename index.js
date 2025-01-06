@@ -8,10 +8,8 @@ const app = express();
 app.use(express.json());
 app.use('/api', userRouter);
 
-// app.get('/api/postgre/user', (req, res) => {
-//     res.json('ok');
-// });
-
 app.listen(serverPort, () => {
     console.log(`Hosted on http://${serverUrl}:${serverPort}`);
 });
+
+// TODO: use fs to create a local logger into the file
