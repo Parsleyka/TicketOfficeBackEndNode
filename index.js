@@ -1,12 +1,15 @@
 const express = require('express');
 
 const {serverUrl, serverPort} = require('./config/dotenv');
+
 const userRouter = require('./routes/userRoutes');
+const eventRouter = require('./routes/eventRoutes');
 
 const app = express();
 
 app.use(express.json());
 app.use('/api', userRouter);
+app.use('/api', eventRouter);
 
 app.listen(serverPort, () => {
     console.log(`Hosted on http://${serverUrl}:${serverPort}`);
