@@ -13,6 +13,11 @@ class Validator {
         date: Joi.date().required(),
     });
 
+    ticketSchema = Joi.object({
+        eventId: Joi.number().integer().min(1).required(),
+        price: Joi.number().greater(0).required()
+    });
+
     validatePostUser(postUserInput) {
         const schema = this.userSchema.append({
             email: Joi.string().email().required(),
@@ -50,6 +55,10 @@ class Validator {
 
     validatePutEvent(putEventInput) {
         return this.eventSchema.validate(putEventInput);
+    }
+
+    validateTicketSchema(ticketInput) {
+        return this.ticketSchema.validate(ticketInput);
     }
 }
 
